@@ -1,0 +1,105 @@
+'use strict';
+const {
+  Model
+} = require('sequelize');
+const bcrypt = require('bcryptjs')
+
+module.exports = (sequelize, DataTypes) => {
+  class User extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    //添加关联，将Categories表与courses表关联起来，用“hasMany”实现join效果，代表User包含多个Course。
+    static associate(models) {
+      models.User.hasMany(models.Course,{as:'courses'})
+    }
+  }
+  User.init({
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: { msg: '邮箱必须填写。' },
+        notEmpty: { msg: '邮箱不能为空。' },
+        isEmail: { msg: '邮箱格式不正确。' },
+        async isUnique(value){
+          const user = await User.findOne({ where: { email: value } })
+          if (user) {
+            throw new Error('邮箱已存在，请直接登录。');
+          }
+        }
+      }
+    },
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: { msg: '用户名必须填写。' },
+        notEmpty: { msg: '用户名不能为空。' },
+        len: { args: [2, 45], msg: '用户名长度必须是2 ~ 45之间。' },
+        async isUnique(value){
+          const user = await User.findOne({ where: { username: value } })
+          if (user) {
+            throw new Error('用户名已存在，请选择其他名称。');
+          }
+        }
+      }
+    },
+    nickname: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: { msg: '昵称必须填写。' },
+        notEmpty: { msg: '昵称不能为空。' },
+        len: { args: [2, 45], msg: '昵称长度必须是2 ~ 45之间。' }
+      }
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: { msg: '密码必须填写。' },
+        notEmpty: { msg: '密码不能为空。' }
+      },
+      set(value) {
+        if(value.length >= 6 && value.length <= 45) {
+          this.setDataValue('password', bcrypt.hashSync(value,8));
+        }else{
+          throw new Error('密码长度必须是6~45之间。')
+        }
+      }//对密码进行bcrypt加密
+    },
+    avatar: {
+      type:DataTypes.STRING,
+      validate: {
+        isUrl:{msg:'图片地址不正确。'}
+      }
+    },
+    sex: {
+      type: DataTypes.TINYINT,
+      allowNull: false,
+      validate: {
+        notNull: { msg: '性别必须填写。' },
+        notEmpty: { msg: '性别不能为空。' },
+        isIn: { args: [[0, 1, 9]], msg: '性别的值必须是：男性：0 女性：1 未选择：9。' }
+      }
+    },
+    company: DataTypes.STRING,
+    introduce: DataTypes.TEXT,
+    role: {
+      type:DataTypes.TINYINT,
+      allowNull: false,
+      validate: {
+        notNull: { msg: '用户组必须选择。' },
+        notEmpty: { msg: '用户组不能为空。' },
+        isIn: { args: [[0,100]], msg: '用户组的值必须是：普通用户：0 管理员：100。' }
+      }
+    }
+  }, {
+    sequelize,
+    modelName: 'User',
+  });
+  return User;
+};

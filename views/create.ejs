@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>添加记录</title>
+    <!-- 引入外部CSS文件 -->
+    <link rel="stylesheet" href="/stylesheets/create_style.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- 标题 -->
+        <div class="title">添加记录</div>
+
+        <!-- 表单 -->
+        <form id="recordForm" method="post" action="/account">
+            <!-- 事项 -->
+            <div class="form-group">
+                <label for="item">事项</label>
+                <input name="title" type="text" id="item" class="form-control" placeholder="请输入事项">
+            </div>
+
+            <!-- 发生时间（日期选择） -->
+            <div class="form-group">
+                <label for="occurTime">发生时间</label>
+                <input name="time" type="date" id="occurTime" class="form-control">
+            </div>
+
+            <!-- 类型（下拉框） -->
+            <div class="form-group">
+                <label for="type">类型</label>
+                <select name="type" id="type" class="form-control">
+                    <option value="-1" selected>支出</option>
+                    <option value="1">收入</option>
+                </select>
+            </div>
+
+            <!-- 金额 -->
+            <div class="form-group">
+                <label for="amount">金额</label>
+                <input name="account" type="number" id="amount" class="form-control" placeholder="请输入金额" step="0.01">
+            </div>
+
+            <!-- 备注 -->
+            <div class="form-group">
+                <label for="remark">备注</label>
+                <textarea name="remarks" id="remark" class="form-control" placeholder="请输入备注（可选）"></textarea>
+            </div>
+
+            <!-- 添加按钮 -->
+            <button type="button" class="btn-submit">添加</button>
+        </form>
+    </div>
+
+    <!-- 引入外部JS文件（放在body末尾确保DOM加载完成） -->
+    <script src="/javascripts/create_script.js"></script>
+</body>
+
+</html>

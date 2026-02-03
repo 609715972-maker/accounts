@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>添加成功</title>
+    <style>
+        /* 全局样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+
+        /* 页面容器 */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* 提示框样式 */
+        .success-box {
+            width: 100%;
+            max-width: 800px;
+            padding: 25px 20px;
+            background-color: #d4edda; /* 浅绿色背景，匹配参考图 */
+            border-radius: 2px;
+            color: #212529; /* 深灰色文字 */
+        }
+
+        /* 成功提示文字 */
+        .success-text {
+            font-size: 20px;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        /* 跳转链接 */
+        .jump-link {
+            font-size: 14px;
+            color: #6c757d; /* 浅灰色文字 */
+            text-decoration: none; /* 去掉默认下划线 */
+            cursor: pointer;
+        }
+
+        /* 链接hover效果（可选优化） */
+        .jump-link:hover {
+            color: #212529;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-box">
+        <div class="success-text">
+            <h1>:)<%=msg%></h1>
+        </div>
+        <!-- 替换 href 为你要跳转的页面（比如记账本展示页） -->
+        <a href="<%=url%>" class="jump-link">点击跳转</a>
+    </div>
+
+    <!-- <script>
+        // 可选：添加自动跳转功能（比如3秒后自动跳转到记账本页面）
+        setTimeout(function() {
+            window.location.href = "<%=url%>"; // 替换为目标页面地址
+        }, 3000); // 3000毫秒 = 3秒
+    </script> -->
+</body>
+</html>

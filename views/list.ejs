@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>记账本</title>
+    <style>
+        /* 全局样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+
+        /* 页面容器 */
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 10px;
+        }
+
+        /* 标题样式 */
+        .title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* 记账记录列表 */
+        .accounts {
+            border: 1px solid #eee;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        /* 单个记录项 */
+        .record-item {
+            border-bottom: 1px solid #eee;
+        }
+
+        /* 日期栏样式 - 支出/收入区分颜色 */
+        .record-date {
+            padding: 8px 15px;
+            font-size: 16px;
+            color: #666;
+        }
+
+        /* 支出日期栏 - 浅粉色 */
+        .record-item.expense .record-date {
+            background-color: #f8d7da;
+        }
+
+        /* 收入日期栏 - 浅绿色 */
+        .record-item.income .record-date {
+            background-color: #d4edda;
+        }
+
+        /* 记录内容行 */
+        .record-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #fff;
+        }
+
+        /* 事项文本 */
+        .record-desc {
+            font-size: 16px;
+            color: #333;
+            flex: 1;
+        }
+
+        /* 类型标签 */
+        .record-type {
+            padding: 4px 8px;
+            border-radius: 3px;
+            color: #fff;
+            font-size: 14px;
+            margin: 0 20px;
+            white-space: nowrap; /* 防止标签换行 */
+        }
+
+        /* 支出标签 - 橙色 */
+        .record-type.expense {
+            background-color: #fd7e14;
+        }
+
+        /* 收入标签 - 绿色 */
+        .record-type.income {
+            background-color: #28a745;
+        }
+
+        /* 金额文本 */
+        .record-amount {
+            font-size: 16px;
+            color: #333;
+            font-weight: 500;
+            white-space: nowrap; /* 防止金额换行 */
+            margin-right: 15px; /* 与关闭按钮保持间距 */
+        }
+
+        /* 最后一个记录项去掉底部边框 */
+        .record-item:last-child {
+            border-bottom: none;
+        }
+
+        /* ===== 关闭按钮样式 ===== */
+        .record-close {
+            text-decoration: none; /* 隐藏下划线 */
+            width: 24px;
+            height: 24px;
+            border: 1px solid #ddd;
+            border-radius: 50%;
+            background-color: #f9f9f9;
+            color: #666;
+            font-size: 16px;
+            line-height: 22px; /* 垂直居中× */
+            text-align: center;
+            cursor: pointer; /* 鼠标悬浮显示手型 */
+            transition: all 0.2s ease; /* 过渡动画，更顺滑 */
+        }
+
+		/* 新增：针对关闭按钮内的a标签去除下划线 */
+        .record-close a {
+        text-decoration: none; /* 去除a标签默认下划线 */
+        color: inherit; /* 继承父元素的颜色，hover时同步变色 */
+        display: block; /* 让a标签铺满父元素，点击范围更大 */
+        width: 100%;
+        height: 100%;
+        line-height: 22px; /* 保证×垂直居中 */
+        }
+        
+        .record-close:hover {
+            background-color: #dc3545;
+            color: #fff;
+            border-color: #dc3545;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- 标题 -->
+        <div class="title">记账本</div>
+
+        <!-- 记录列表 -->
+        <div class="accounts" id="recordList">
+            <!-- 支出记录项 --> 
+            <% accounts.forEach(item=>{ %>
+            <div class="record-item <%=item.type==='-1'?'expense':'income'%>">
+                <div class="record-date"><%=item.time%></div>
+                <div class="record-content">
+                    <div class="record-desc"><%=item.title%></div>
+                    <div class="record-type <%=item.type==='-1'?'expense':'income'%>"><%=item.type==='-1'?'支出':'收入'%></div>
+                    <div class="record-amount"><%=item.account%> 元</div>
+                    <div class="record-close"> <a href="/account/<%=item.id%>">×</a> </div>
+                </div>
+            </div>
+            <% }) %>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
