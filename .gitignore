@@ -11,3 +11,6 @@ Thumbs.db
 
 # dock与mysql的数据库文件
 /data
+
+#环境变量文件，设计密钥
+/.env
