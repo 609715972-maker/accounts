@@ -158,7 +158,7 @@ function getCondition() {
             {
                 model: User,
                 as: 'user',
-                attributes: ['id', 'username', 'avatar']
+                attributes: ['id', 'username', 'nickname']
             }
         ]
     }
