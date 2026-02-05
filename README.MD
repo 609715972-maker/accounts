@@ -18,20 +18,26 @@
 
 `sequelize init`	初始化sequelize，会在项目中生成四个文件夹，config(数据库连接配置)，migrations(迁移文件)，models(模型文件)，seeders(种子文件)
 
-`npm i bcryptjs`	加密算法包，用于对用户密码进行加密存储
+`npm i bcryptjs --save`	加密算法包，用于对用户密码进行加密存储
 
-`npm i jsonwebtoken`	用JWT包，生成TOKEN，相当于身份验证令牌
+`npm i jsonwebtoken --save`	用JWT包，生成TOKEN，相当于身份验证令牌
 
-`npm i dotenv`	作用是从 .env 文件中加载环境变量，并注入到 process.env 中，可以在代码里安全地使用环境变量
+`npm i dotenv --save`	作用是从 .env 文件中加载环境变量，并注入到 process.env 中，可以在代码里安全地使用环境变量
 
-`npm i cors`	解决跨域问题专用包
+`npm i cors --save`	解决跨域问题专用包
 
-`npm i multer` 安装multer依赖包，Express框架专用的处理文件上传的依赖包
+`npm i multer --save` 安装multer依赖包，Express框架专用的处理文件上传的依赖包
+
+`npm i cos-nodejs-sdk-v5 --save` 腾讯云COS用的包
+
+`npm i uuid --save`生成全球唯一的字符串，用于上传文件，避免文件重名
+
+`npm i http-errors --save` 用于处理各种http错误代码的包
 
 ## sequelize指令
 `sequelize model:generate --name Category --attributes name:string,rank:integer` 	创建模型和迁移文件，字段名要和数据库中的Users表一一对应，注意模型名称为单数，数据库表名会自动生成复数（id是自动生成的，不用写）。注意在models中添加数据验证。
 
-`sequelize db:migrate`	运行migrations中的所有迁移文件，会把已经创建好的模型文件，执行一下，在数据库中生成表(已执行过的不会再运行)。注意执行之前要在迁移文件中更改每个字段的属性，确保符合数据库设计需求。
+`sequelize db:migrate (--name 文件名)`	运行migrations中的所有迁移文件，会把已经创建好的模型文件，执行一下，在数据库中生成表(已执行过的不会再运行)。注意执行之前要在迁移文件中更改每个字段的属性，确保符合数据库设计需求。
 
 `sequelize seed:generate --name article`	新建种子文件(用于批量测试)，执行后在seeds目录能看到，up是填充数据，down是反向操作
 
@@ -42,3 +48,12 @@
 `sequelize db:migrate:undo`	回滚上一次的迁移，也就是删掉之前新增的表。用于需要更改模型字段时，重新运行迁移文件。（回滚时运行的是迁移文件中的down函数）
 
 `sequelize migration:create --name add-avatar-to-user`	新建一个迁移文件，用于为数据库添加字段。但要记得在模型中手动添加字段
+
+##配置环境变量
+```txt
+SECRET=token密钥
+TENCENT_SECRETID=腾讯云子账户ID
+TENCENT_SECRETKEY=腾讯云子账户KEY
+TENCENT_BUCKET=存储桶名称，腾讯云中查看
+TENCENT_REGION=存储桶所在地域，腾讯云中查看
+```

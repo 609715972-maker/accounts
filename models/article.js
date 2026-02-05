@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      models.Article.belongsTo(models.User,{as:'user'})
     }
   }
   Article.init({
@@ -31,6 +31,21 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     content: DataTypes.TEXT,
+    attachUrl:DataTypes.TEXT,
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notNull: {msg: '用户ID必须填写。'},
+        notEmpty: {msg: '用户ID不能为空。'},
+        async isPresent(value) {
+          const user = await sequelize.models.User.findByPk(value)
+          if (!user) {
+            throw new Error(`ID为：${value} 的用户不存在。`);
+          }
+        }
+      }
+    },
   }, {
     sequelize,
     modelName: 'Article',

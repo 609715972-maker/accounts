@@ -19,6 +19,8 @@ const adminCoursesRouter = require('./routes/admin/courses');
 const adminChapterRouter = require('./routes/admin/chapters');
 const adminChartsRouter = require('./routes/admin/charts');
 const adminAuthRouter = require('./routes/admin/auth');
+//前台路由文件(长乐未央)
+const uploadsRouter = require('./routes/uploads');
 
 const app = express();
 
@@ -47,6 +49,7 @@ app.use(cors(corsOptions));
 */
 
 //前台路由配置
+app.use('/uploads', uploadsRouter)
 
 //后台路由配置(长乐未央)，中间件的顺序代表了执行顺序
 app.use('/admin/articles',adminAuth,adminArticlesRouter);

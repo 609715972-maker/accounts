@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {Chapter, Course} = require('../../models')
 const {Op} = require('sequelize') //模糊查询要用到的包
-const {NotFoundError} = require('../../utils/errors');
+const {NotFound,BadRequest} = require('http-errors');
 const { success, failure } = require('../../utils/responses');//自定义的工具类
 
 //查询章节列表
@@ -20,7 +20,7 @@ router.get('/', async function (req, res, next) {
         const offset = (currentPage - 1) * pageSize
 
         if(!query.courseId){
-            throw new error('获取章节列表失败，课程ID不能为空')
+            throw new BadRequest('获取章节列表失败，课程ID不能为空')
         }
 
         //定义查询条件：按照id倒序排序，同时指定条数和页码
@@ -32,12 +32,12 @@ router.get('/', async function (req, res, next) {
             offset: offset
         }
 
-        //模糊查询
         if (query.courseId) {
             condition.where.courseId = {
                 [Op.eq]: query.courseId
             }
         }
+        //模糊查询
         if (query.title) {
             condition.where.title = {
                 [Op.like]: `%${query.title}%`
@@ -157,7 +157,7 @@ async function getChapter(req) {
 
     //如果没有找到，就抛出异常
     if (!chapter) {
-        throw new NotFoundError(`ID: ${id} 的章节未找到。`)
+        throw new NotFound(`ID: ${id} 的章节未找到。`)
     }
     return chapter
 

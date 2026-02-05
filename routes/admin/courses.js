@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {Course, Category, User,Chapter} = require('../../models')
 const {Op} = require('sequelize') //模糊查询要用到的包
-const {NotFoundError} = require('../../utils/errors');
+const {NotFound,Conflict} = require('http-errors');
 const { success, failure } = require('../../utils/responses');//自定义的工具类
 
 //查询课程列表
@@ -109,7 +109,7 @@ router.delete('/:id', async function (req, res, next) {
         //约束，防止删除某个课程时，课程下的章节全都找不到这个课程了
         const count = await Chapter.count({ where: { courseId: req.params.id } });
         if (count > 0) {
-            throw new Error('当前课程有章节，无法删除。');
+            throw new Conflict('当前课程有章节，无法删除。');
         }
 
         await course.destroy()
@@ -182,7 +182,7 @@ async function getCourse(req) {
 
     //如果没有找到，就抛出异常
     if (!course) {
-        throw new NotFoundError(`ID: ${id} 的课程未找到。`)
+        throw new NotFound(`ID: ${id} 的课程未找到。`)
     }
     return course
 

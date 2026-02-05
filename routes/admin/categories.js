@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {Category,Course} = require('../../models')
 const {Op} = require('sequelize') //模糊查询要用到的包
-const {NotFoundError} = require('../../utils/errors');
+const {NotFound,Conflict} = require('http-errors');
 const { success, failure } = require('../../utils/responses');//自定义的工具类
 
 //查询分类列表
@@ -89,7 +89,7 @@ router.delete('/:id', async function (req, res, next) {
         //约束，防止删除某个分类时，分类下的课程全都找不到这个分类了
         const count = await Course.count({ where: { categoryId: req.params.id } });
         if (count > 0) {
-            throw new Error('当前分类有课程，无法删除。');
+            throw new Conflict('当前分类有课程，无法删除。');
         }
 
         await category.destroy()
@@ -136,7 +136,7 @@ async function getCategory(req) {
 
     //如果没有找到，就抛出异常
     if (!category) {
-        throw new NotFoundError(`ID: ${id} 的分类未找到。`)
+        throw new NotFound(`ID: ${id} 的分类未找到。`)
     }
     return category
 

@@ -1,9 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const {Article} = require('../../models')
+const {Article,User } = require('../../models')
 const {Op} = require('sequelize') //模糊查询要用到的包
-const {NotFoundError} = require('../../utils/errors');
-const { success, failure } = require('../../utils/responses');//自定义的工具类
+const {NotFound, BadRequest} = require('http-errors');
+const multer = require('multer')
+const {uploadToCos} = require('../../utils/tecentcloud');
+const {success, failure} = require('../../utils/responses');//自定义的工具类
+
+//multer配置
+const storage = multer.memoryStorage();// 内存存储，适合小文件；大文件可改用 diskStorage
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 } // 5MB 限制
+});
 
 //查询文章列表
 //因为app.js中写的是app.use('/admin/articles')这个路径，所以路由处理写'/'就是/admin/articles的网址入口
@@ -21,10 +30,17 @@ router.get('/', async function (req, res, next) {
 
         //定义查询条件：按照id倒序排序，同时指定条数和页码
         const condition = {
+            ...getCondition(),
             where: {}, // 先初始化空的where对象，防止后续多个where覆写
             order: [['id', 'DESC']],
             limit: pageSize,
             offset: offset
+        }
+
+        if (query.userId) {
+            condition.where.userId = {
+                [Op.eq]: query.userId
+            }
         }
 
         //处理title模糊查询
@@ -64,12 +80,28 @@ router.get('/:id', async function (req, res, next) {
 })
 
 //创建文章
-router.post('/', async function (req, res, next) {
+router.post('/', upload.single('file'),async function (req, res, next) {
     try {
-        //白名单过滤
-        const body = filterBody(req)
+        let attachUrl = '';
+        // 校验是否有文件
+        if (req.file) {
+            //调用工具类上传文件
+            const uploadResult = await uploadToCos(req.file, {
+                prefix: 'uploads/' //用于自定义存储前缀，比如 'images/' 'docs/'
+            });
+            attachUrl = uploadResult.fileUrl
+        }
 
-        const article = await Article.create(body)
+        //白名单过滤
+        //const body = filterBody(req)
+        const articleData = {
+            title: req.body.title,   // 读取 form-data 中的 title 字段
+            content: req.body.content, // 读取 form-data 中的 content 字段
+            attachUrl: attachUrl,
+            userId: req.user.id //已通过admin-auth中间件解析过token，可得知当前登录user的id
+        };
+
+        const article = await Article.create(articleData)
 
         //使用自定义的请求成功函数(201表示成功，且创建了新的资源)
         success(res, '创建文章成功。', {article}, 201)
@@ -112,8 +144,25 @@ router.put('/:id', async function (req, res, next) {
     } catch (error) {
         failure(res, error)
     }
-    r
+
 })
+
+/**
+ * 公共方法：关联用户数据
+ * @returns {{attributes: {exclude: [string]}}}
+ */
+function getCondition() {
+    return {
+        attributes: {exclude: ['UserId']}, //排除查询结果中大写的CategoryId和UserId
+        include: [
+            {
+                model: User,
+                as: 'user',
+                attributes: ['id', 'username', 'avatar']
+            }
+        ]
+    }
+}
 
 /**
  * 公共方法：查询当前文章
@@ -129,7 +178,7 @@ async function getArticle(req) {
 
     //如果没有找到，就抛出异常
     if (!article) {
-        throw new NotFoundError(`ID: ${id} 的文章未找到。`)
+        throw new NotFound(`ID: ${id} 的文章未找到。`)
     }
     return article
 
